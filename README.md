@@ -12,7 +12,6 @@ Add to cart and manage cart items
 
 Order placement and order history
 
-Responsive design for desktop and mobile
 
 Technologies Used
 React & React Router
