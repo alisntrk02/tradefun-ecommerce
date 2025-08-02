@@ -11,12 +11,15 @@ function Shopping() {
   } = useCart();
 
   const totalPrice = cartItems.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
+    (acc, item) =>
+      item.product && item.product.price
+        ? acc + item.product.price * item.quantity
+        : acc,
     0
   );
 
   if (cartItems.length === 0)
-    return <h1 className="text-center text-2xl mt-20">Sepet boş</h1>;
+    return <h1 className="text-center text-2xl mt-20">Your cart is empty!</h1>;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
@@ -32,55 +35,60 @@ function Shopping() {
       <hr />
 
       <div className="space-y-6">
-        {cartItems.map((item) => (
-          <div
-            key={item.product._id}
-            className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-md"
-          >
-            <img
-              src={item.product.image}
-              alt={item.product.name}
-              className="w-24 h-24 object-contain rounded-md border"
-            />
-            <div className="flex-1">
-              <h2 className="text-lg font-semibold">{item.product.name}</h2>
-              <p
-                className={`text-sm font-semibold ${
-                  item.product.countInStock > 0
-                    ? "text-green-400"
-                    : "text-red-600"
-                }`}
-              >
-                {item.product.countInStock > 0 ? "In stock" : "Out of stock"}
-              </p>
-              <div className="flex items-center gap-3 mt-2">
-                {item.quantity > 1 ? (
+        {cartItems.map((item) => {
+          if (!item.product) return null;
+          return (
+            <div
+              key={item.product._id}
+              className="flex items-center gap-6 p-4 bg-white rounded-lg shadow-md"
+            >
+              <img
+                src={item.product.image}
+                alt={item.product.name}
+                className="w-24 h-24 object-contain rounded-md border"
+              />
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold">{item.product.name}</h2>
+                <p
+                  className={`text-sm font-semibold ${
+                    item.product.countInStock > 0
+                      ? "text-green-400"
+                      : "text-red-600"
+                  }`}
+                >
+                  {item.product.countInStock > 0 ? "In stock" : "Out of stock"}
+                </p>
+                <div className="flex items-center gap-3 mt-2">
+                  {item.quantity > 1 ? (
+                    <button
+                      onClick={() => decreaseQuantity(item.product)}
+                      className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
+                    >
+                      &lt;
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => removeFromCart(item.product._id)}
+                      className="text-red-500 hover:text-red-700 text-lg"
+                    >
+                      <TrashIcon className="h-5 w-5  text-black" />
+                    </button>
+                  )}
+                  <span className="text-md font-semibold">{item.quantity}</span>
                   <button
-                    onClick={() => decreaseQuantity(item.product)}
+                    onClick={() => increaseQuantity(item.product)}
                     className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
                   >
-                    &lt;
+                    &gt;
                   </button>
-                ) : (
-                  <button
-                    onClick={() => removeFromCart(item.product._id)}
-                    className="text-red-500 hover:text-red-700 text-lg"
-                  >
-                    <TrashIcon className="h-5 w-5  text-black" />
-                  </button>
-                )}
-                <span className="text-md font-semibold">{item.quantity}</span>
-                <button
-                  onClick={() => increaseQuantity(item.product)}
-                  className="px-2 py-1 bg-gray-200 rounded hover:bg-gray-300"
-                >
-                  &gt;
-                </button>
+                </div>
+                <p className="text-md font-medium mt-1">
+                  {item.product.price} $
+                </p>
               </div>
-              <p className="text-md font-medium mt-1">{item.product.price} $</p>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-10 p-4 bg-gray-100 rounded-lg shadow-inner flex justify-between items-center">
